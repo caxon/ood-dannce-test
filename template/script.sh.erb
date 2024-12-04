@@ -4,11 +4,11 @@
 echo "TIMING - Starting main script at: $(date)"
 
 # Set working directory to home directory
-cd "${HOME}"
+export INSTANCE_DIR=<%= context.instance_dir %=>
+<%- -%>
 
-#
-# Start Jupyter Notebook Server
-#
+cd /n/holylabs/LABS/olveczky_lab/Lab/dannce-dev/newsdannce/src/gui_be
+
 
 <%- unless context.modules.blank? -%>
 # Purge the module environment to avoid conflicts
