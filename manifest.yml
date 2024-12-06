@@ -1,7 +1,8 @@
 ---
-name: DANNCE APP
+name: DANNCE GUI
 category: Interactive Apps
-subcategory: Servers
 role: batch_connect
 description: |
   This app will launch DANNCE GUI on the FASRC Cannon cluster
+icon: fas://volleyball-ball
+url: https://github.com/HarvardRC/newsdannce
