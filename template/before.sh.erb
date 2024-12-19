@@ -15,23 +15,53 @@
 #       Default: 32
 #
 
-# export FASTAPI_PORT=$(find_port 7000 11000)
-# export RABBITMQ_NODE_PORT=$(find_port 7000 11000)
-# export FLOWER_PORT=$(find_port 7000 11000)
-export FASTAPI_PORT=5123
-export RABBITMQ_NODE_PORT=5124
-export FLOWER_PORT=5125
+# Export the module function if it exists
+[[ $(type -t module) == "function" ]] && export -f module
 
-BASE_PROXY_HOST="https://rcood.rc.fas.harvard.edu/rnode/$SLURM_NODELIST.rc.fas.harvard.edu"
-export FASTAPI_URL="$BASE_PROXY_HOST/${FASTAPI_PORT}/v1"
-export GUI_APP_URL="${BASE_PROXY_HOST}/${FASTAPI_PORT}/app/index.html"
-export FLOWER_URL="${BASE_PROXY_HOST}/${FLOWER_PORT}"
+BASE_PROXY_HOST="https://rcood.rc.fas.harvard.edu/rnode/${SLURM_NODELIST}.rc.fas.harvard.edu"
 
-port="${FASTAPI_PORT}"
+export port=$(find_port localhost 7000 11000 )
+export RABBITMQ_PORT=$(find_port)
+export FASTAPI_PORT=${port}
 
-export DIST_FOLDER="/n/holylabs/LABS/olveczky_lab/Lab/dannce-dev/newsdannce/src/dannce_gui_fe/dist"
-CONFIG_JS="${DIST_FOLDER}/config.js"
 
-# replace the config.js file with the new version
-echo "const apiUrl=const""${FASTAPI_URL}""" > $CONFIG_JS
+export SERVER_BASE_URL="${BASE_PROXY_HOST}/${FASTAPI_PORT}"
+export API_BASE_URL="${SERVER_BASE_URL}/v1"
+export REACT_APP_BASE_URL="${SERVER_BASE_URL}/app/index.html"
+export SDANNCE_SINGULARITY_IMG_PATH=<%= context.sdannce_singularity_img_path %>
+export DANNCE_GUI_SINGULARITY_IMG_PATH=<%= context.dannce_gui_singularity_img_path %>
 
+export ENV_FILE=${PWD}/ood.env
+export BASE_MOUNT=<%= context.instance_dir %>
+echo "Base Mount (instance_dir): $BASE_MOUNT"
+
+# write an env file used to launch singularity
+cat <<EOT >> $ENV_FILE
+FASTAPI_PORT=${FASTAPI_PORT}
+RABBITMQ_PORT=${RABBITMQ_PORT}
+SERVER_BASE_URL=${SERVER_BASE_URL}
+API_BASE_URL="${API_BASE_URL}"
+REACT_APP_BASE_URL="${REACT_APP_BASE_URL}"
+SDANNCE_SINGULARITY_IMG_PATH="TBD"
+EOT
+
+
+export JOBROOT=$PWD
+
+
+
+echo "Cat'ing env file"
+cat $ENV_FILE
+echo "Eching env varibales..."
+echo "RABBITMQ_PORT=${RABBITMQ_PORT}"
+echo "FASTAPI_PORT=${FASTAPI_PORT}"
+echo "SERVER_BASE_URL=${SERVER_BASE_URL}"
+echo "API_BASE_URL=${API_BASE_URL}"
+echo "REACT_APP_BASE_URL=${REACT_APP_BASE_URL}"
+echo "ENV_FILE=${ENV_FILE}"
+echo "JOBROOT=${JOBROOT}"
+echo "SDANNCE_SINGULARITY_IMG_PATH=${SDANNCE_SINGULARITY_IMG_PATH}"
+echo "DANNCE_GUI_SINGULARITY_IMG_PATH=${DANNCE_GUI_SINGULARITY_IMG_PATH}"
+echo "HOSTNAME:"
+hostname -I
+echo "DONE WITH BEFORE SCRIPT"
